@@ -20,6 +20,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
+import javax.script.Bindings;
+import javax.script.SimpleBindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -115,7 +121,7 @@ public class VersionNumberBuilder extends BuildWrapper {
     public boolean getSkipFailedBuilds() {
     	return this.skipFailedBuilds;
     }
-    
+
     private static Date parseDate(String dateString) {
     	try {
             return defaultDateFormat.parse(dateString);
@@ -313,7 +319,30 @@ public class VersionNumberBuilder extends BuildWrapper {
                     projectStartCal.setTime(projectStartDate);
                     int yearsSinceStart = buildDate.get(Calendar.YEAR) - projectStartCal.get(Calendar.YEAR);
                     replaceValue = sizeTo(Integer.toString(yearsSinceStart), argumentString.length());
+                } else if ("JS".equals(expressionKey)) {
+                    try {
+                        ScriptEngineManager mgr = new ScriptEngineManager();
+                        ScriptEngine engine = mgr.getEngineByName("js");
+                        Bindings bindings = new SimpleBindings();
+                        bindings.putAll(enVars);
+log.print(enVars);
+                        bindings.put("BUILDS_ALL_TIME",info.getBuildsAllTime());
+                        bindings.put("BUILDS_ALL_TIME_Z",info.getBuildsAllTime()-1);
+                        try {
+                            Object response = engine.eval(argumentString, bindings);
+                            if( response instanceof Double ) {
+                                replaceValue = Integer.toString( ((Double)response).intValue());
+                            } else {
+                                replaceValue = response.toString();
+                            }
+                        } catch( ScriptException e ) {
+                            e.printStackTrace(log);
+                        }
+                    } catch(LinkageError _) {
+                        // Do nothing.  We can't run a script in Java 5.
+                    }
                 }
+                
                 // if it's not one of the defined values, check the environment variables
                 else {
                     for (String enVarKey : enVars.keySet()) {
