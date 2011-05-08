@@ -1,9 +1,21 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <f:entry title="Environment Variable Name" help="/plugin/versionnumber/help-environmentVariableName.html">
-    <f:textbox field="environmentVariableName" />
-  </f:entry>
-  <f:entry title="Version Number Format String" help="/plugin/versionnumber/help-versionNumberFormatString.html">
-    <f:textbox field="versionNumberString" />
+  <f:entry field="versionNumberStrings" title="${%Version Numbers}" description="${%Version numbers to define}">
+    <f:repeatable field="versionNumberStrings" add="${%Add Version Number}">
+        <table width="100%">
+
+
+       <f:entry title="${%Environment Variable Name}" field="environmentVariableName" help="/plugin/versionnumber/help-environmentVariableName.html">
+           <f:textbox/>
+       </f:entry>
+       <br/>
+       <f:entry title="${%Version Number Format}" field="versionNumberString" help="/plugin/versionnumber/help-versionNumberFormatString.html">
+           <f:textbox/>
+       </f:entry>
+        </table>
+        <div align="right">
+          <input type="button" value="${%Delete Version}" class="repeatable-delete" style="margin-left: 1em;" />
+        </div>
+    </f:repeatable>
   </f:entry>
   <f:entry title="Failed Builds" help="/plugin/versionnumber/help-reuseVersionNumbers.html">
     <f:checkbox name="skipFailedBuilds" checked="${instance.skipFailedBuilds}" />
