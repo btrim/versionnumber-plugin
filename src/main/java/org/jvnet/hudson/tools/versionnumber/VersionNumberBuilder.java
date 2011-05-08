@@ -52,8 +52,15 @@ public class VersionNumberBuilder extends BuildWrapper {
     
     private static final DateFormat defaultDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
-    private final List<VersionNumber> versionNumberStrings;
-    private final Date projectStartDate;
+    private List<VersionNumber> versionNumberStrings;
+    private Date projectStartDate;
+
+    // Backward compatibility
+    @Deprecated
+    private  String environmentVariableName = null;
+
+    @Deprecated
+    private  String versionNumberString = null;
 
     private int oBuildsToday;
     private int oBuildsThisMonth;
@@ -65,25 +72,31 @@ public class VersionNumberBuilder extends BuildWrapper {
     @DataBoundConstructor
     public VersionNumberBuilder(
                                 List<VersionNumber> versionNumberStrings,
-                         //       String versionNumberString,
+                                String versionNumberString,
                                 String projectStartDate,
-                           //     String environmentVariableName,
+                                String environmentVariableName,
                                 String buildsToday,
                                 String buildsThisMonth,
                                 String buildsThisYear,
                                 String buildsAllTime,
                                 boolean skipFailedBuilds) {
 
+        // These values are the old ones, and they'll be used as the first items in the list.
+        this.versionNumberString = versionNumberString;
+        this.environmentVariableName = environmentVariableName;
         // Allow migration of existing single version number into the list.
         if( versionNumberStrings != null &&
                 versionNumberStrings.size() > 0)
         {
-            this.versionNumberStrings = new LinkedList<VersionNumber>(versionNumberStrings);
+            this.versionNumberStrings = versionNumberStrings;
+            // Make sure we remove the backward-compatibility fields
+            this.versionNumberString = null;
+            this.environmentVariableName = null;
         }
         else
         {
-            this.versionNumberStrings = new LinkedList<VersionNumber>();
-            //this.versionNumberStrings.add(new VersionNumber(environmentVariableName,versionNumberString));
+            this.versionNumberStrings = new ArrayList<VersionNumber>();
+            this.versionNumberStrings.add(new VersionNumber(environmentVariableName,versionNumberString));
         }
 
         this.projectStartDate = parseDate(projectStartDate);
@@ -145,6 +158,11 @@ public class VersionNumberBuilder extends BuildWrapper {
      * We'll use this from the <tt>config.jelly</tt>.
      */
     public List<VersionNumber> getVersionNumberStrings() {
+        if( versionNumberString != null && versionNumberStrings == null)
+        {
+            versionNumberStrings = new ArrayList<VersionNumber>();
+            versionNumberStrings.add(new VersionNumber(environmentVariableName,versionNumberString));
+        }
         return versionNumberStrings;
     }
 
@@ -152,9 +170,16 @@ public class VersionNumberBuilder extends BuildWrapper {
     public String getProjectStartDate() {
     	return defaultDateFormat.format(projectStartDate);
     }
-   /* public String getEnvironmentVariableName() {
-    	return this.environmentVariableName;
-    }*/
+    
+    @Deprecated
+    public String getEnvironmentVariableName() {
+    	return environmentVariableName;
+    }
+
+    @Deprecated
+    public String getVersionNumberString(){
+        return versionNumberString;
+    }
     
     private Run getPreviousBuildWithVersionNumber(AbstractBuild build) {
     	// a build that fails early will not have a VersionNumberAction attached
@@ -381,6 +406,7 @@ log.print(enVars);
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
         final Map<String,String> formattedVersionNumbers = new HashMap<String,String>();
 
+        final Map<VersionNumber,String> versionMap = new HashMap<VersionNumber,String>();
         VersionNumberBuildInfo info = null;
         try {
             info = incBuild(build, listener.getLogger());
@@ -395,7 +421,7 @@ log.print(enVars);
             try {
 
 
-                formattedVersionNumber = formatVersionNumber(version.getVersionNumberString(),
+                formattedVersionNumber = formatVersionNumber(version.getFormat(),
                                  this.projectStartDate,
                                  info,
                                  build.getEnvironment(listener),
@@ -413,9 +439,9 @@ log.print(enVars);
                 build.setResult(Result.FAILURE);
             }
 
-            build.addAction(new VersionNumberAction(info, formattedVersionNumber));
-            formattedVersionNumbers.put(version.getEnvironmentVariableName(),formattedVersionNumber);
+            formattedVersionNumbers.put(version.getEnvVariable(),formattedVersionNumber);
         }
+        build.addAction(new VersionNumberAction(info, formattedVersionNumbers));
 
         return new Environment() {
             @Override

@@ -1,14 +1,19 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<script><![CDATA[
+        function versionNumberPopulate() {
+            if(
+        }
+]]></script>
   <f:entry field="versionNumberStrings" title="${%Version Numbers}" description="${%Version numbers to define}">
     <f:repeatable field="versionNumberStrings" add="${%Add Version Number}">
         <table width="100%">
 
 
-       <f:entry title="${%Environment Variable Name}" field="environmentVariableName" help="/plugin/versionnumber/help-environmentVariableName.html">
+       <f:entry title="${%Environment Variable Name}" field="envVariable" help="/plugin/versionnumber/help-environmentVariableName.html">
            <f:textbox/>
        </f:entry>
        <br/>
-       <f:entry title="${%Version Number Format}" field="versionNumberString" help="/plugin/versionnumber/help-versionNumberFormatString.html">
+       <f:entry title="${%Version Number Format}" field="format" help="/plugin/versionnumber/help-versionNumberFormatString.html">
            <f:textbox/>
        </f:entry>
         </table>
@@ -17,6 +22,9 @@
         </div>
     </f:repeatable>
   </f:entry>
+    <!-- These are for backward-compatibility -->
+    <input type="hidden" name="versionNumberString" value="${instance.versionNumberString}"/>
+    <input type="hidden" name="environmentVariableName" value="${instance.environmentVariableName}"/>
   <f:entry title="Failed Builds" help="/plugin/versionnumber/help-reuseVersionNumbers.html">
     <f:checkbox name="skipFailedBuilds" checked="${instance.skipFailedBuilds}" />
     	Don't increment builds today/ this month/ this year/ all time after a failed build.

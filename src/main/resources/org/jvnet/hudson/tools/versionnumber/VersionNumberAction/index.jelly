@@ -1,0 +1,33 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	<l:layout title="Version Numbers">
+
+    <j:invokeStatic var="currentThread" className="java.lang.Thread" method="currentThread" />
+    <j:invoke var="buildClass" on="${currentThread.contextClassLoader}" method="loadClass">
+      <j:arg value="hudson.model.AbstractBuild" />
+    </j:invoke>
+    <j:set var="build" value="${request.findAncestorObject(buildClass)}" />
+		<st:include page="sidepanel.jelly" it="${build}" />
+    <l:main-panel>
+
+       	<h1>Version Number Information</h1>
+
+        <ul>
+          <j:forEach var="versionEntry" items="${it.versions.entrySet()}">
+              <li style="list-style-type: none">
+                <img src="${it.iconFileName}"/> ${versionEntry.key}: ${versionEntry.value}
+              </li>
+          </j:forEach>
+        </ul>
+        
+        <h1>${%Build Statistics Used}</h1>
+            <b>${%Builds On Day of Build:}</b> ${it.info.buildsToday}
+            <br/>
+            <b>${%Builds During Month of Build:}</b> ${it.info.buildsThisMonth}
+            <br/>
+            <b>${%Builds During Year of Build:}</b> ${it.info.buildsThisYear}
+            <br/>
+            <b>${%Builds Since Project Start:}</b> ${it.info.buildsAllTime}
+
+	</l:main-panel>
+  	</l:layout>
+</j:jelly>
