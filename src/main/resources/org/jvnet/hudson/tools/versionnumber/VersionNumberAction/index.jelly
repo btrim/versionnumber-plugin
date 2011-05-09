@@ -11,22 +11,21 @@
 
        	<h1>Version Number Information</h1>
 
-        <ul>
+        <ul style="list-style-type: none">
           <j:forEach var="versionEntry" items="${it.versions.entrySet()}">
-              <li style="list-style-type: none">
+              <li>
                 <img src="${it.iconFileName}"/> ${versionEntry.key}: ${versionEntry.value}
               </li>
           </j:forEach>
         </ul>
-        
+
         <h1>${%Build Statistics Used}</h1>
-            <b>${%Builds On Day of Build:}</b> ${it.info.buildsToday}
-            <br/>
-            <b>${%Builds During Month of Build:}</b> ${it.info.buildsThisMonth}
-            <br/>
-            <b>${%Builds During Year of Build:}</b> ${it.info.buildsThisYear}
-            <br/>
-            <b>${%Builds Since Project Start:}</b> ${it.info.buildsAllTime}
+        <ul style="list-style-type: none">
+            <li style="list-item-type: none"><b>${%Builds On Day of Build:}</b> ${it.info.buildsToday}</li>
+            <li style="list-item-type: none"><b>${%Builds During Month of Build:}</b> ${it.info.buildsThisMonth}</li>
+            <li style="list-item-type: none"><b>${%Builds During Year of Build:}</b> ${it.info.buildsThisYear}</li>
+            <li style="list-item-type: none"><b>${%Builds Since Project Start:}</b> ${it.info.buildsAllTime}</li>
+        </ul>
 
 	</l:main-panel>
   	</l:layout>

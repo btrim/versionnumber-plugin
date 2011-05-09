@@ -1,3 +1,4 @@
+
 package org.jvnet.hudson.tools.versionnumber;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -8,9 +9,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class VersionNumber {
 
 
-    String environmentVariableName;
+    private String environmentVariableName;
 
-    String versionNumberString;
+    private String versionNumberString;
 
     @DataBoundConstructor
     public VersionNumber( String envVariable,

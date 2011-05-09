@@ -11,6 +11,8 @@ import hudson.scm.NullSCM;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jvnet.hudson.test.HudsonTestCase;
 
@@ -19,6 +21,7 @@ public class VersionNumberBuilderTest extends HudsonTestCase {
 	public void testTwoBuilds() throws Exception {
 		FreeStyleProject job = createFreeStyleProject("versionNumberJob");
 		VersionNumberBuilder versionNumberBuilder = new VersionNumberBuilder(
+                null,
 				"${BUILDS_ALL_TIME}", null, null, null, null, null, null, false);
 		job.getBuildWrappersList().add(versionNumberBuilder);
 		FreeStyleBuild build = buildAndAssertSuccess(job);
@@ -30,6 +33,7 @@ public class VersionNumberBuilderTest extends HudsonTestCase {
 	public void testFailureEarlyDoesNotResetVersionNumber() throws Exception {
 		FreeStyleProject job = createFreeStyleProject("versionNumberJob");
 		VersionNumberBuilder versionNumberBuilder = new VersionNumberBuilder(
+                null,
 				"${BUILDS_ALL_TIME}", null, null, null, null, null, null, false);
 		job.getBuildWrappersList().add(versionNumberBuilder);
 		buildAndAssertSuccess(job);

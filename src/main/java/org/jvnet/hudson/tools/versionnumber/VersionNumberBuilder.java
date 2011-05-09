@@ -404,9 +404,8 @@ log.print(enVars);
     
     @SuppressWarnings("unchecked") @Override
     public Environment setUp(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        final Map<String,String> formattedVersionNumbers = new HashMap<String,String>();
+        final Map<String,String> formattedVersionNumbers = new LinkedHashMap<String,String>();
 
-        final Map<VersionNumber,String> versionMap = new HashMap<VersionNumber,String>();
         VersionNumberBuildInfo info = null;
         try {
             info = incBuild(build, listener.getLogger());

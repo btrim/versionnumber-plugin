@@ -2,6 +2,7 @@ package org.jvnet.hudson.tools.versionnumber;
 
 import hudson.model.Action;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,15 +11,20 @@ public class VersionNumberAction implements Action {
     
     private VersionNumberBuildInfo info;
     private Map<String,String> versions;
-    private String versionNumber;
+
+    @Deprecated
+    private String versionNumber = null;
 
     public VersionNumberAction(VersionNumberBuildInfo info, Map<String, String> versions){
-        this(info,versions,null);
-    }
-
-    public VersionNumberAction(VersionNumberBuildInfo info, Map<String, String> versions,String versionNumber) {
         this.info = info;
         this.versions = versions;
+    }
+
+    @Deprecated
+    public VersionNumberAction(VersionNumberBuildInfo info, Map<String, String> versions,String versionNumber) {
+        this(info, versions);
+
+
         this.versionNumber = versionNumber;
     }
     
@@ -44,6 +50,12 @@ public class VersionNumberAction implements Action {
 
     public Map<String,String> getVersions()
     {
+        if( versions == null )
+        {
+            Map<String,String> tmp = new LinkedHashMap<String, String>();
+            tmp.put("",versionNumber);
+            return tmp;
+        }
         return versions;
     }
     
